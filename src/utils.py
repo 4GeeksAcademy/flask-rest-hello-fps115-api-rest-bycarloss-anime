@@ -38,4 +38,27 @@ def generate_sitemap(app):
         <p>API HOST: <script>document.write('<input style="padding: 5px; width: 300px" type="text" value="'+window.location.href+'" />');</script></p>
         <p>Start working on your proyect by following the <a href="https://start.4geeksacademy.com/starters/flask" target="_blank">Quick Start</a></p>
         <p>Remember to specify a real endpoint path like: </p>
-        <ul style="text-align: left;">"""+links_html+"</ul></div>"
+        <ul style="text-align: left;">"""+links_html+"</ul></div>"""
+
+def paginate_query(query, page, limit):
+    page = 1 if page is None else int(page) if str(page).isdigit() else 1
+    limit = 24 if limit is None else int(limit) if str(limit).isdigit() else 24
+    if page < 1:
+        page = 1
+    if limit < 1:
+        limit = 1
+    if limit > 100:
+        limit = 100
+    total = query.count()
+    items = query.offset((page - 1) * limit).limit(limit).all()
+    total_pages = (total + limit - 1) // limit
+    meta = {"page": page, "limit": limit, "total": total, "total_pages": total_pages}
+    return items, meta
+
+def get_current_user_id():
+    from flask import request
+    user_id = request.headers.get("X-User-Id") or request.args.get("user_id")
+    try:
+        return int(user_id) if user_id is not None else 1
+    except:
+        return 1

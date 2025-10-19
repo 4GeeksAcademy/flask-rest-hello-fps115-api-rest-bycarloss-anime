@@ -9,6 +9,9 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
+from routes.anime import anime_bp
+from routes.characters import characters_bp
+from routes.users_favorites import users_bp
 #from models import Person
 
 app = Flask(__name__)
@@ -25,6 +28,10 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+
+app.register_blueprint(anime_bp)
+app.register_blueprint(characters_bp)
+app.register_blueprint(users_bp)
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
